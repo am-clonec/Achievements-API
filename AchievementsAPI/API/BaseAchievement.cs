@@ -20,10 +20,73 @@
         /// The achievement's icon's path
         /// </summary>
         public string IconPath;
+
         /// <summary>
-        /// The achievement's icon
+        /// Gets or sets the achievement's icon
         /// </summary>
-        public Sprite Icon;
+        public virtual Sprite Icon => _sprite;
+
+        /// <summary>
+        /// Gets the background sprite for the achievement in the achievements menu.
+        /// </summary>
+        public virtual Sprite? MenuBgSprite => null;
+
+        /// <summary>
+        /// Gets the background sprite for the achievement in the toast pop up.
+        /// </summary>
+        public virtual Sprite? ToastBgSprite => null;
+
+        /// <summary>
+        /// Gets the offset for the achievement's icon in the achievements menu.
+        /// </summary>
+        public virtual Vector3 MenuIconOffset => new(0, 0);
+
+        /// <summary>
+        /// Gets the offset for the achievement's title in the achievements menu.
+        /// </summary>
+        public virtual Vector3 MenuTitleOffset => new(0, 0);
+
+        /// <summary>
+        /// Gets the offset for the achievement's description in the achievements menu.
+        /// </summary>
+        public virtual Vector3 MenuDescOffset => new(0, 0);
+
+        /// <summary>
+        /// Gets the offset for the achievement's sub-icon, if any.
+        /// </summary>
+        public virtual Vector3 MenuSubIconOffset => new(0, 0);
+
+        /// <summary>
+        /// Gets the scale for the achievement's sub-icon, if any.
+        /// </summary>
+        public virtual Vector3 MenuSubIconScale => new(0.5f, 0.5f, 1);
+
+        /// <summary>
+        /// Gets the achievement's sub-icon, if any.
+        /// </summary>
+        public virtual Sprite? MenuSubIcon => null;
+
+        /// <summary>
+        /// Gets the offset for the achievement's "Obtained" text in the toast pop up.
+        /// </summary>
+        public virtual Vector3 ToastObtainedOffset => new(0, 0);
+
+        /// <summary>
+        /// Gets the offset for the achievement's title in the toast pop up.
+        /// </summary>
+        public virtual Vector3 ToastTitleOffset => new(0, 0);
+
+        /// <summary>
+        /// Gets the offset for the achievement's icon in the toast pop up.
+        /// </summary>
+        public virtual Vector3 ToastIconOffset => new(0, 0);
+
+        /// <summary>
+        /// Whether the achievement's background becomes colored.
+        /// </summary>
+        public bool RarityOnBgSprite = true;
+
+        private Sprite _sprite;
         public bool Unlocked;
         /// <summary>
         /// The achievement's rarity:
@@ -34,11 +97,11 @@
         /// </summary>
         public int Rarity;
         /// <summary>
-        /// Wether the achievement is hidden or not (hidden achievements get the default icon and have their name and description set to "Hidden Achievement" until unlocked)
+        /// Whether the achievement is hidden or not (hidden achievements get the default icon and have their name and description set to "Hidden Achievement" until unlocked)
         /// </summary>
         public bool Hidden;
         /// <summary>
-        /// Wether to hide the achievement's rarity (if the achievement is hidden)
+        /// Whether to hide the achievement's rarity (if the achievement is hidden)
         /// </summary>
         public bool HideRarity;
         public Assembly Assembly;
@@ -56,15 +119,13 @@
             if (doStorageUpdate) AchievementStorage.AchievementStorageUpdate(this, true);
             
         }
-        
-        
         public BaseAchievement(string name, string description, string iconPath, int rarity = 0, bool hidden = false, bool hideRarity = true, Assembly? assembly = null)
         {
             Name = name;
             Description = description;
             IconPath = iconPath;
             Assembly = assembly ?? Assembly.GetCallingAssembly();
-            Icon = SpriteTools.LoadSpriteFromPath(IconPath, Assembly, 100);
+            _sprite = SpriteTools.LoadSpriteFromPath(IconPath, Assembly, 100);
             Id = Assembly.GetName().Name + "_" + Name;
             Rarity = rarity;
             Hidden = hidden;
@@ -75,7 +136,17 @@
             Name = name;
             Description = description;
             Assembly = assembly ?? Assembly.GetCallingAssembly();
-            Icon = icon;
+            _sprite = icon;
+            Id = Assembly.GetName().Name + "_" + Name;
+            Rarity = rarity;
+            Hidden = hidden;
+            HideRarity = hideRarity;
+        }
+        public BaseAchievement(string name, string description, int rarity = 0, bool hidden = false, bool hideRarity = true, Assembly? assembly = null)
+        {
+            Name = name;
+            Description = description;
+            Assembly = assembly ?? Assembly.GetCallingAssembly();
             Id = Assembly.GetName().Name + "_" + Name;
             Rarity = rarity;
             Hidden = hidden;

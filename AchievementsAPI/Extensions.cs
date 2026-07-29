@@ -1,8 +1,8 @@
 using System;
 using System.Collections;
-using Reactor.Utilities;
-using Reactor.Utilities.Extensions;
 using UnityEngine;
+using VentLib.Utilities;
+using VentLib.Utilities.Extensions;
 
 // Completely stole this from MiraAPI, thanks hehe
 
@@ -22,7 +22,7 @@ public static class Extensions
         var needsDeepDestroy = version >= requiredVersion;
         if (needsDeepDestroy)
         {
-            Coroutines.Start(Nuke(obj, clearGc));
+            Async.Execute(Nuke(obj, clearGc));
         }
         else
         {
@@ -126,7 +126,7 @@ public static class Extensions
     /// </summary>
     public static void ClearGarbageCollector()
     {
-        Coroutines.Start(CoFreeResources());
+        Async.Execute(CoFreeResources());
     }
 
     private static IEnumerator CoFreeResources()

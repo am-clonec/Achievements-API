@@ -34,8 +34,38 @@ public class AchievementStorage
     public static void AchievementStorageUpdate(CountAchievement achievement, int progress, bool unlocked)
     {
         var data = GetData(achievement);
+        var newProgress = Math.Clamp(progress, 0, achievement.RequiredValue);
         data.Unlocked = unlocked;
-        if (achievement.ProgressPersists) data.Progress = progress;
+        if (achievement.ProgressPersists is AchPersistence.ThroughoutSessions || data.Unlocked) data.Progress = newProgress;
+
+        Save();
+    }
+    public static void AchievementDataReset(BaseAchievement achievement, bool? unlocked = false)
+    {
+        var data = GetData(achievement);
+        if (unlocked != null)
+        {
+            achievement.Unlocked = unlocked.Value;
+            data.Unlocked = unlocked.Value;
+        }
+
+        Save();
+    }
+
+    public static void AchievementDataReset(CountAchievement achievement, int progress = 0, bool? unlocked = null)
+    {
+        var data = GetData(achievement);
+        data.Progress = Math.Clamp(progress, 0, achievement.RequiredValue);
+        if (unlocked != null)
+        {
+            achievement.Unlocked = unlocked.Value;
+            data.Unlocked = unlocked.Value;
+        }
+        else
+        {
+            data.Unlocked = data.Progress == achievement.RequiredValue;
+            achievement.Unlocked = data.Progress == achievement.RequiredValue;
+        }
 
         Save();
     }
@@ -74,7 +104,7 @@ public class AchievementStorage
     public static void AchievementStorageGet(AchievementsTab tab)
     {
         foreach (var propInfo in tab.GetType().GetProperties().Where(x =>
-                                 x.PropertyType == typeof(BaseAchievement)))
+                                 x.PropertyType.IsAssignableTo(typeof(BaseAchievement))))
         {
             var achievement = propInfo.GetValue(tab) as BaseAchievement;
             if (achievement == null) continue;
@@ -85,7 +115,7 @@ public class AchievementStorage
         }
 
         foreach (var propInfo in tab.GetType().GetProperties().Where(x =>
-                                 x.PropertyType == typeof(CountAchievement)))
+                                 x.PropertyType.IsAssignableTo(typeof(CountAchievement))))
         {
             var achievement = propInfo.GetValue(tab) as CountAchievement;
             if (achievement == null) continue;

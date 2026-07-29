@@ -1,6 +1,6 @@
 using System;
 using System.Reflection;
-using Reactor.Utilities.Extensions;
+using AchievementsAPI.Reactor.Embedded;
 using UnityEngine;
 
 namespace AchievementsAPI;

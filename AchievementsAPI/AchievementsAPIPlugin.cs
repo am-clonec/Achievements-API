@@ -4,14 +4,13 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using HarmonyLib;
-using Reactor;
-using Reactor.Utilities;
+using VentLib;
 
 namespace AchievementsAPI;
 
 [BepInAutoPlugin]
 [BepInProcess("Among Us.exe")]
-[BepInDependency(ReactorPlugin.Id)]
+[BepInDependency(Vents.Id)]
 public partial class AchievementsAPIPlugin : BasePlugin
 {
     public Harmony Harmony { get; } = new(Id);

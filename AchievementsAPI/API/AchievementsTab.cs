@@ -15,7 +15,7 @@ public abstract class AchievementsTab
     public abstract string Name { get; }
 
     /// <summary>
-    /// Wether the tab should be selectable in the Achievements Menu. Handy for custom UI's or internal achievements.
+    /// Whether the tab should be selectable in the Achievements Menu. Handy for custom UI's or internal achievements.
     /// </summary>
     public virtual bool IsSelectable => true;
 

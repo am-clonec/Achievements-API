@@ -4,3 +4,10 @@ obj/
 riderModule.iml
 /_ReSharper.Caches/
 .idea/
+*.lock.json
+.vs/
+*.user
+.qodo
+*.DS_Store
+
+.fake
