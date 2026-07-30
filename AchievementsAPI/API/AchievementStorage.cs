@@ -21,7 +21,9 @@ public class AchievementData
 public class AchievementStorage
 {
     public static List<AchievementData> BaseAchievements = new List<AchievementData>();
-    public static string JsonPath => OperatingSystem.IsAndroid() ? Path.Combine(Environment.GetEnvironmentVariable("STAR_DATA_PATH"), "AchievementsAPIData/achievements.json") : Path.Combine(Application.persistentDataPath, "AchievementsAPIData/achievements.json");
+    public static string JsonPath => OperatingSystem.IsAndroid() 
+        ? Path.Combine(Environment.GetEnvironmentVariable("STAR_DATA_PATH"), "AchievementsAPIData/achievements.json") 
+        : Path.Combine(Application.persistentDataPath, "AchievementsAPIData/achievements.json");
     
     public static void AchievementStorageUpdate(BaseAchievement achievement, bool unlocked)
     {

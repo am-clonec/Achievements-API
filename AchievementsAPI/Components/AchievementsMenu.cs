@@ -89,8 +89,8 @@ namespace AchievementsAPI
 
                 var parent = achievement.Unlocked ? unlockedContentParent.Value : lockedContentParent.Value;
                 var uiElement = Object.Instantiate(achievementItemPrefab.Value, parent).GetComponent<AchievementsMenuItem>();
-                uiElement.nameText.Value.text = (!achievement.Hidden || achievement.Unlocked) ? achievement.Name : "Hidden Achievement";
-                uiElement.descriptionText.Value.text = (!achievement.Hidden || achievement.Unlocked) ? achievement.Description : "Hidden Achievement";
+                uiElement.nameText.Value.text = (!achievement.Hidden || achievement.Unlocked) ? achievement.Name : Localization.HiddenAchievement;
+                uiElement.descriptionText.Value.text = (!achievement.Hidden || achievement.Unlocked) ? achievement.Description : Localization.HiddenAchievementDescription;
                 uiElement.iconImage.Value.sprite = (!achievement.Hidden || achievement.Unlocked) ?
                     achievement.Icon : SpriteTools.LoadSpriteFromPath("AchievementsAPI.Resources.ExampleIcon.png", Assembly.GetCallingAssembly(), 100);
                 uiElement.grayscaleImage.Value.sprite = uiElement.iconImage.Value.sprite;

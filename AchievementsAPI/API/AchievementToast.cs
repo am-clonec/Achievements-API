@@ -92,7 +92,7 @@ public class AchievementToast
 
         currentToast = GetOrCreateToast();
         PopulateToast(currentToast, achievement.Icon, achievement.Assembly,
-            "Achievement Obtained!",
+            Localization.AchievementObtained,
             achievement.Name,
             achievement.ToastTitleOffset,
             achievement.ToastObtainedOffset,
@@ -117,8 +117,8 @@ public class AchievementToast
         if (achievement.Hidden && achievement.HideProgress && !unlocked)
         {
             PopulateToast(currentToast, achievement.Icon, achievement.Assembly,
-                "Achievement Progressed!",
-                "Hidden Achievement",
+                Localization.AchievementProgressed,
+                Localization.HiddenAchievement,
                 achievement.ToastTitleOffset,
                 achievement.ToastObtainedOffset,
                 achievement.ToastIconOffset);
@@ -126,7 +126,7 @@ public class AchievementToast
         else
         {
             PopulateToast(currentToast, achievement.Icon, achievement.Assembly,
-                unlocked ? "Achievement Obtained!" : "Achievement Progressed!",
+                unlocked ? Localization.AchievementObtained : Localization.AchievementProgressed,
                 $"{achievement.Name} ({achievement.CurrentValue}/{achievement.RequiredValue})",
                 achievement.ToastTitleOffset,
                 achievement.ToastObtainedOffset,
