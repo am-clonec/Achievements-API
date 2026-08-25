@@ -9,9 +9,13 @@
         <VersionSuffix>dev</VersionSuffix>
         <Description>Achievements API for Among Us</Description>
         <!-- <Authors>your name</Authors> -->
+        <PackageLicenseFile>LICENSE</PackageLicenseFile>
+        <IncludeContentInPack>true</IncludeContentInPack>
     </PropertyGroup>
 
     <ItemGroup>
+        <None Include="../LICENSE" Pack="true" PackagePath="" />
+        <None Include="../README.md" Pack="true" PackagePath="" />
         <PackageReference Include="Reactor" Version="2.5.0-ci.371"/>
         <PackageReference Include="BepInEx.Unity.IL2CPP" Version="6.0.0-be.735" Private="false" ExcludeAssets="runtime;native"/>
         <PackageReference Include="AmongUs.GameLibs.Steam" Version="2026.3.31" PrivateAssets="all" />

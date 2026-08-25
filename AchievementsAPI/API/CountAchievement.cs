@@ -17,21 +17,28 @@ public class CountAchievement : BaseAchievement
     /// </summary>
     public int RequiredValue;
     /// <summary>
-    /// Defines if the progress persists between games.
+    /// Defines how the progress persists between games.
     /// </summary>
-    public bool ProgressPersists;
+    public AchPersistence ProgressPersists;
     /// <summary>
-    /// Wether to hide the achievement's progress (if the achievement is hidden)
+    /// Whether to hide the achievement's progress (if the achievement is hidden)
     /// </summary>
     public bool HideProgress;
-    public CountAchievement(string name, string description, string iconPath, int currentValue, int requiredValue, bool progressPersists = true, int rarity = 0, bool hidden = false, bool hideRarity = true, bool hideProgress = false) : base(name, description, iconPath, rarity, hidden, hideRarity, System.Reflection.Assembly.GetCallingAssembly())
+    public CountAchievement(string name, string description, string iconPath, int currentValue, int requiredValue, AchPersistence progressPersists = AchPersistence.ThroughoutSessions, int rarity = 0, bool hidden = false, bool hideRarity = true, bool hideProgress = false) : base(name, description, iconPath, rarity, hidden, hideRarity, System.Reflection.Assembly.GetCallingAssembly())
     {
         CurrentValue = currentValue;
         RequiredValue = requiredValue;
         ProgressPersists = progressPersists;
         HideProgress = hideProgress;
     }
-    public CountAchievement(string name, string description, Sprite icon, int currentValue, int requiredValue, bool progressPersists = true, int rarity = 0, bool hidden = false, bool hideRarity = true, bool hideProgress = false) : base(name, description, icon, rarity, hidden, hideRarity, System.Reflection.Assembly.GetCallingAssembly())
+    public CountAchievement(string name, string description, Sprite icon, int currentValue, int requiredValue, AchPersistence progressPersists = AchPersistence.ThroughoutSessions, int rarity = 0, bool hidden = false, bool hideRarity = true, bool hideProgress = false) : base(name, description, icon, rarity, hidden, hideRarity, System.Reflection.Assembly.GetCallingAssembly())
+    {
+        CurrentValue = currentValue;
+        RequiredValue = requiredValue;
+        ProgressPersists = progressPersists;
+        HideProgress = hideProgress;
+    }
+    public CountAchievement(string name, string description, int currentValue, int requiredValue, AchPersistence progressPersists = AchPersistence.ThroughoutSessions, int rarity = 0, bool hidden = false, bool hideRarity = true, bool hideProgress = false) : base(name, description, rarity, hidden, hideRarity, System.Reflection.Assembly.GetCallingAssembly())
     {
         CurrentValue = currentValue;
         RequiredValue = requiredValue;
@@ -54,7 +61,6 @@ public class CountAchievement : BaseAchievement
     /// <param name="showOnUI">Shows an unlock animation on the hud.</param>
     public void SetValue(int value, bool showOnUI = true)
     {
-        
         CurrentValue = value;
         if (showOnUI && !Unlocked) AchievementToast.ShowAndDeleteToast(this, Unlocked);
         if (CurrentValue >= RequiredValue)
@@ -67,4 +73,12 @@ public class CountAchievement : BaseAchievement
         AchievementStorage.AchievementStorageUpdate(this, value, Unlocked);
         
     }
+}
+
+public enum AchPersistence
+{
+    ThroughoutSessions,
+    ThroughoutRounds,
+    ResetOnRoundStart,
+    ResetOnMeetingStart
 }

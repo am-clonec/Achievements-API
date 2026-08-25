@@ -7,7 +7,7 @@ namespace AchievementsAPI;
 public class ExampleTab : AchievementsTab
 {
     public override string Name => "Example Tab";
-    public override bool IsSelectable => true;
+    public override bool IsSelectable => AchievementsManager.Tabs.Count == 1; // if there are more tabs, those will be shown instead.
     public override Color GetTabColor()
     {
         return Color.red;

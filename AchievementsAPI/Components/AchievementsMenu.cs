@@ -1,8 +1,9 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using System.Reflection;
+using System;
+using System.Linq;
 using AchievementsAPI.API;
 using Il2CppInterop.Runtime.InteropTypes.Fields;
 using Reactor.Utilities;
@@ -27,6 +28,7 @@ namespace AchievementsAPI
         public Il2CppReferenceField<TextMeshProUGUI> percentageText;
         public Il2CppReferenceField<Image> progressBar;
         public MainMenuManager mainMenuManager;
+        public OptionsMenuBehaviour OptionsMenuBehaviour;
         public List<AchievementsMenuItem> items = new();
         private void Start()
         {
@@ -40,20 +42,38 @@ namespace AchievementsAPI
                 btn.onClick.AddListener(new Action(() =>
                 {
                     SetTab(tab);
-                    mainMenuManager?.StartCoroutine(
-                        Effects.ActionAfterDelay(0.01f, new System.Action(() => SetTab(tab))));
+                    if (mainMenuManager)
+                    {
+                        mainMenuManager.StartCoroutine(
+                            Effects.ActionAfterDelay(0.01f, new System.Action(() => SetTab(tab))));
+                    }
+                    else if (OptionsMenuBehaviour)
+                    {
+                        OptionsMenuBehaviour.gameObject.SetActive(true);
+                        OptionsMenuBehaviour.StartCoroutine(Effects.ActionAfterDelay(0.01f, new System.Action(() => SetTab(tab, true))));
+                    }
                 }));
                 AchievementStorage.AchievementStorageGet(tab);
             }
-            SetTab(AchievementsManager.Tabs[0]);
-            mainMenuManager?.DeactivateMainMenuUI();
+
+            var firstTab = AchievementsManager.Tabs.FirstOrDefault(x => x.IsSelectable) ?? AchievementsManager.Tabs[0];
+            SetTab(firstTab);
+            if (mainMenuManager)
+            {
+                mainMenuManager.DeactivateMainMenuUI();
+            }
+            else if (OptionsMenuBehaviour)
+            {
+                OptionsMenuBehaviour.gameObject.SetActive(false);
+                OptionsMenuBehaviour.Background.enabled = false;
+            }
 
         }
-        private void SetTab(AchievementsTab tab)
+        private void SetTab(AchievementsTab tab, bool inOptionsMenu = false)
         {
             foreach (var element in items)
             {
-                element.gameObject.DeepDestroy();
+                element.gameObject.Destroy();
             }
 
             items = new();
@@ -80,26 +100,49 @@ namespace AchievementsAPI
                     uiElement.descriptionText.Value.text += $" ({countAchievement.CurrentValue}/{countAchievement.RequiredValue})";
                 }
 
-                if (achievement.HideRarity && !achievement.Unlocked && achievement.Hidden)
+                uiElement.nameText.Value.transform.localPosition += achievement.MenuTitleOffset;
+                uiElement.descriptionText.Value.transform.localPosition += achievement.MenuDescOffset;
+                uiElement.grayscaleImage.Value.transform.localPosition += achievement.MenuIconOffset;
+                uiElement.iconImage.Value.transform.localPosition += achievement.MenuIconOffset;
+                if (achievement.MenuSubIcon != null)
                 {
-                    
+                    var subIcon = Instantiate(uiElement.iconImage.Value, uiElement.iconImage.Value.transform.parent);
+                    subIcon.fillAmount = 1;
+                    subIcon.m_Sprite = achievement.MenuSubIcon;
+                    subIcon.transform.localScale = achievement.MenuSubIconScale;
+                    subIcon.transform.localPosition += achievement.MenuSubIconOffset;
                 }
-                else if (achievement.Rarity == 1)
+
+                var img = uiElement.GetComponent<Image>();
+                if (achievement.MenuBgSprite != null)
                 {
-                    uiElement.GetComponent<Image>().color = new Color32(112, 208, 255, 255);
+                    img.m_Sprite = achievement.MenuBgSprite;
                 }
-                else if (achievement.Rarity == 2)
+                if (achievement.RarityOnBgSprite && !(!achievement.HideRarity && !achievement.Unlocked && achievement.Hidden))
                 {
-                    uiElement.GetComponent<Image>().color = new Color32(187, 88, 255, 255);
+                    if (achievement.Rarity == 1)
+                    {
+                        img.color = new Color32(112, 208, 255, 255);
+                    }
+                    else if (achievement.Rarity == 2)
+                    {
+                        img.color = new Color32(187, 88, 255, 255);
+                    }
+                    else if (achievement.Rarity == 3)
+                    {
+                        img.color = new Color32(255, 226, 64, 255);
+                    }
                 }
-                else if (achievement.Rarity == 3)
-                {
-                    uiElement.GetComponent<Image>().color = new Color32(255, 226, 64, 255);
-                }
+                
                 achievementCount++;
                 if (achievement.Unlocked) completedAchievementCount++;
                 
                 items.Add(uiElement);
+            }
+
+            if (inOptionsMenu && OptionsMenuBehaviour)
+            {
+                OptionsMenuBehaviour.gameObject.SetActive(false);
             }
             if (!transform.GetChild(0).TryGetComponent<Image>(out var image)) return;
             Coroutines.Start(FadeColor(image, image.color, tab.GetTabColor(), 0.3f));
@@ -110,14 +153,23 @@ namespace AchievementsAPI
                 progressBar.Value.fillAmount = 0;
                 return;
             }
-            
-            percentageText.Value.text = $"{(double) completedAchievementCount / achievementCount * 100}%";
+
+            double percent = (double) completedAchievementCount / achievementCount * 100f;
+            percentageText.Value.text = $"{percent.ToString("0.00", CultureInfo.InvariantCulture)}%";
         }
 
         public void Close()
         {
-            mainMenuManager?.ActivateMainMenuUI();
-            gameObject.DeepDestroy();
+            if (mainMenuManager)
+            {
+                mainMenuManager.ActivateMainMenuUI();
+            }
+            else if (OptionsMenuBehaviour)
+            {
+                OptionsMenuBehaviour.gameObject.SetActive(true);
+                OptionsMenuBehaviour.Background.enabled = true;
+            }
+            gameObject.Destroy();
         }
         public void OnSearchbarChanged(string val)
         {

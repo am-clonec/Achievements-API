@@ -42,11 +42,17 @@ public class AchievementToast
         }
     }
 
-    private static void PopulateToast(Transform toast, Sprite icon, System.Reflection.Assembly assembly, string title, string subtitle)
+    private static void PopulateToast(Transform toast, Sprite icon, System.Reflection.Assembly assembly, string title, string subtitle, Vector3 titleOffset, Vector3 subtitleOffset, Vector3 iconOffset)
     {
-        toast.FindChild("AchievementIcon").gameObject.GetComponent<Image>().sprite = icon;
-        toast.FindChild("AchievementName").gameObject.GetComponent<TMPro.TextMeshProUGUI>().text = title;
-        toast.FindChild("AchievementObtainedText").gameObject.GetComponent<TMPro.TextMeshProUGUI>().text = subtitle;
+        var icoObj = toast.FindChild("AchievementIcon").gameObject.GetComponent<Image>();
+        icoObj.sprite = icon;
+        icoObj.transform.localPosition += iconOffset;
+        var titleObj = toast.FindChild("AchievementName").gameObject.GetComponent<TMPro.TextMeshProUGUI>();
+        titleObj.text = title;
+        titleObj.transform.localPosition += titleOffset;
+        var subtitleObj = toast.FindChild("AchievementObtainedText").gameObject.GetComponent<TMPro.TextMeshProUGUI>();
+        subtitleObj.text = subtitle;
+        subtitleObj.transform.localPosition += subtitleOffset;
     }
 
     private static IEnumerator CoAnimateAndDestroyToast()
@@ -74,7 +80,7 @@ public class AchievementToast
             yield return null;
         }
         
-        currentToast.gameObject.DeepDestroy();
+        currentToast.gameObject.Destroy();
         yield break;
     }
 
@@ -87,8 +93,16 @@ public class AchievementToast
 
         currentToast = GetOrCreateToast();
         PopulateToast(currentToast, achievement.Icon, achievement.Assembly,
-            title: "Achievement Obtained!",
-            subtitle: achievement.Name);
+            "Achievement Obtained!",
+            achievement.Name,
+            achievement.ToastTitleOffset,
+            achievement.ToastObtainedOffset,
+            achievement.ToastIconOffset);
+        var img = currentToast.GetComponent<Image>();
+        if (achievement.ToastBgSprite != null)
+        {
+            img.m_Sprite = achievement.ToastBgSprite;
+        }
 
         yield return Coroutines.Start(CoAnimateAndDestroyToast());
     }
@@ -104,14 +118,25 @@ public class AchievementToast
         if (achievement.Hidden && achievement.HideProgress && !unlocked)
         {
             PopulateToast(currentToast, achievement.Icon, achievement.Assembly,
-                title: "Achievement Progressed!",
-                subtitle: $"Hidden Achievement");
+                "Achievement Progressed!",
+                "Hidden Achievement",
+                achievement.ToastTitleOffset,
+                achievement.ToastObtainedOffset,
+                achievement.ToastIconOffset);
         }
         else
         {
             PopulateToast(currentToast, achievement.Icon, achievement.Assembly,
-                title: unlocked ? "Achievement Obtained!" : "Achievement Progressed!",
-                subtitle: $"{achievement.Name} ({achievement.CurrentValue}/{achievement.RequiredValue})");
+                unlocked ? "Achievement Obtained!" : "Achievement Progressed!",
+                $"{achievement.Name} ({achievement.CurrentValue}/{achievement.RequiredValue})",
+                achievement.ToastTitleOffset,
+                achievement.ToastObtainedOffset,
+                achievement.ToastIconOffset);
+        }
+        var img = currentToast.GetComponent<Image>();
+        if (achievement.ToastBgSprite != null)
+        {
+            img.m_Sprite = achievement.ToastBgSprite;
         }
 
         yield return Coroutines.Start(CoAnimateAndDestroyToast());
