@@ -1,12 +1,11 @@
-name: CI
-
+name: VF
 on:
   push:
     branches:
-      - master
+      - vf
   pull_request:
     branches:
-      - master
+      - vf
 
 jobs:
   build:
